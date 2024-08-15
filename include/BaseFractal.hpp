@@ -1,4 +1,5 @@
 #pragma once
+
 #include <IFractal.hpp>
 
 /**
@@ -10,6 +11,9 @@ class BaseFractal : public IFractal {
          * Initialize a Fullscreen OpenGL window.
          *
          * @param p_windowTitle Title of the window.
+         * 
+         * @throws WindowInitializationError, if openGL couldn't be initialized.
+         * @throws WindowCreationError, if Opengl failed to create a window.
          */
         void initializeWindow(const std::string &p_windowTitle);
 
@@ -18,6 +22,10 @@ class BaseFractal : public IFractal {
          * The vertexShader should be identical for all Fractals and thus doesnt need to be dynamic.
          *
          * @param p_fragmentShaderSource Path to the fragment Shader.
+         * 
+         * @throws ShaderError if one of the shaders contain errors.
+         * @throws ShaderLinkingError if the shaderProgram is invalid.
+         * @throws MissingShader if a Shader was not found.
          */
         void createShaderProgram(const std::string &p_fragmentShaderSource);
 

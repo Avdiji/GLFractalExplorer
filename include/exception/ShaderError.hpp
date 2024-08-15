@@ -1,3 +1,5 @@
+#pragma once
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -7,9 +9,9 @@
 /**
  * Throw, when a OpenGL shader can not be compiled.
  */
-class ShaderException : public std::runtime_error {
+class ShaderError : public std::runtime_error {
     public:
-        ShaderException(const GLuint &p_shader) : std::runtime_error(createErrorMessage(p_shader)) {}
+        ShaderError(const GLuint &p_shader) : std::runtime_error(createErrorMessage(p_shader)) {}
 
     private:
         static std::string createErrorMessage(const GLuint &p_shader) {
@@ -46,4 +48,13 @@ class ShaderLinkingError : public std::runtime_error {
                 return std::string("No linking errors, exception should not be thrown.");
             }
         }
+};
+
+/**
+ * Throw, when Shader at a specified location was not found.
+ */
+class MissingShader : public std::runtime_error {
+    public:
+        MissingShader(const std::string &p_shaderPath)
+            : std::runtime_error("The Shader at the given Path: '" + p_shaderPath + "' was not found") {}
 };

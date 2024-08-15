@@ -7,5 +7,6 @@ target_sources(
     FILES
     IFractal.hpp
     BaseFractal.hpp
-    exception/ShaderException.hpp
+    exception/ShaderError.hpp
+    exception/WindowError.hpp
 )

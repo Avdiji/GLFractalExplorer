@@ -6,7 +6,7 @@
 #include <sstream>
 
 void BaseFractal::initializeWindow(const std::string& p_windowTitle) {
-    glfwInit();
+    if (!glfwInit()) { throw WindowInitializationError(); }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -15,14 +15,25 @@ void BaseFractal::initializeWindow(const std::string& p_windowTitle) {
     // Get primary monitor
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     _window = glfwCreateWindow(_width, _height, p_windowTitle.c_str(), nullptr, nullptr);
+    if (!_window) {
+        glfwTerminate();
+        throw WindowCreationError();
+    }
     glfwMakeContextCurrent(_window);
     gladLoadGL();
 }
 
 void BaseFractal::createShaderProgram(const std::string& p_fragmentShaderSource) {
     // Locate and read shader files
-    std::ifstream vertexShaderFile("../../../src/shaders/shader.vert");
+    const std::string vertexShaderSource = "../../../src/shaders.shader.vert";
+    std::ifstream vertexShaderFile(vertexShaderSource);
     std::ifstream fragmentShaderFile(p_fragmentShaderSource);
+
+    if (!vertexShaderFile.is_open()) {
+        throw MissingShader(vertexShaderSource);
+    } else if (!fragmentShaderFile.is_open()) {
+        throw MissingShader(p_fragmentShaderSource);
+    }
 
     std::string vertexShaderStr;
     std::string fragmentShaderStr;
@@ -40,14 +51,14 @@ void BaseFractal::createShaderProgram(const std::string& p_fragmentShaderSource)
     // catch shader exception
     GLint success;
     glGetShaderiv(_vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) { throw ShaderException(_vertexShader); }
+    if (!success) { throw ShaderError(_vertexShader); }
 
     // Create and compile fragment shader
     _fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(_fragmentShader, 1, &fragmentShaderSource, nullptr);
     glCompileShader(_fragmentShader);
     glGetShaderiv(_fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) { throw ShaderException(_fragmentShader); }
+    if (!success) { throw ShaderError(_fragmentShader); }
 
     // Link shaders into a shader program
     _shaderProgram = glCreateProgram();

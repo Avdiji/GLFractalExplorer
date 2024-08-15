@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-
 #include <BaseFractal.hpp>
 #include <fstream>
 #include <iostream>
@@ -39,17 +37,25 @@ void BaseFractal::createShaderProgram(const std::string& p_fragmentShaderSource)
     _vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(_vertexShader, 1, &vertexShaderSource, nullptr);
     glCompileShader(_vertexShader);
+    // catch shader exception
+    GLint success;
+    glGetShaderiv(_vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) { throw ShaderException(_vertexShader); }
 
     // Create and compile fragment shader
     _fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(_fragmentShader, 1, &fragmentShaderSource, nullptr);
     glCompileShader(_fragmentShader);
+    glGetShaderiv(_fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) { throw ShaderException(_fragmentShader); }
 
     // Link shaders into a shader program
     _shaderProgram = glCreateProgram();
     glAttachShader(_shaderProgram, _vertexShader);
     glAttachShader(_shaderProgram, _fragmentShader);
     glLinkProgram(_shaderProgram);
+    glGetProgramiv(_shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) { throw ShaderLinkingError(_shaderProgram); }
 
     // Cleanup shaders as they're now linked into our program
     glDeleteShader(_vertexShader);
@@ -104,4 +110,13 @@ void BaseFractal::renderFractal() {
     }
 
     glfwTerminate();
+}
+
+int main() {
+    BaseFractal fractal;
+
+    fractal.initializeWindow("BaseFractal");
+    fractal.createShaderProgram("../../../src/shaders/shader.frag");
+    fractal.setupBuffers();
+    fractal.renderFractal();
 }

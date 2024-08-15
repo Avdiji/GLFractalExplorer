@@ -1,8 +1,6 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-
-#include <string>
+#include <exception/ShaderException.hpp>
 
 /**
  * Interface - Class.
@@ -22,6 +20,9 @@ class IFractal {
          * The vertexShader should be identical for all Fractals and thus doesnt need to be dynamic.
          *
          * @param p_fragmentShaderSource Path to the fragment Shader.
+         * 
+         * @throws ShaderException if one of the shaders contain errors.
+         * @throws ShaderLinkingError if the shaderProgram is invalid.
          */
         virtual void createShaderProgram(const std::string &p_fragmentShaderSource) = 0;
 

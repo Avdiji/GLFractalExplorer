@@ -11,12 +11,6 @@
 class IFractal {
     public:
         /**
-         * Destructor.
-         * Unbinds and deletes any buffers.
-         */
-        virtual ~IFractal() = 0;
-
-        /**
          * Initialize a Fullscreen OpenGL window.
          *
          * @param p_windowTitle Title of the window.
@@ -32,42 +26,12 @@ class IFractal {
         virtual void createShaderProgram(const std::string &p_fragmentShaderSource) = 0;
 
         /**
-         * Bind the VAO
+         * Setup the VAO, VBO, EBO and everything surrounding that.
          */
-        virtual void BindVAO() = 0;
-
-        /**
-         * Bind the VBO and EBO.
-         */
-        virtual void BindBuffers() = 0;
-
-        /**
-         * Unbind the VBO and EBO.
-         */
-        virtual void UnbindBuffers() = 0;
+        virtual void setupBuffers() = 0;
 
         /**
          * Render the Fractal.
          */
         virtual void renderFractal() = 0;
-
-        /**
-         * First function to be executed on rendering the Fractal.
-         */
-        virtual void onRenderStart() = 0;
-
-        /**
-         * Last function to be executed on rendering the Fractal.
-         */
-        virtual void onRenderEnd() = 0;
-
-    private:
-        // Buffer ID's
-        GLuint _VAO, _VBO, _EBO;
-
-        // Shader ID's
-        GLuint _vertexShader, _fragmentShader, _shaderProgram;
-
-        // Window
-        GLFWwindow *_window;
 };

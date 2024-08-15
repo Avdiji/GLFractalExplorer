@@ -10,6 +10,11 @@
 class IFractal {
     public:
         /**
+         * Destructor
+         */
+        virtual ~IFractal() {};
+
+        /**
          * Initialize a Fullscreen OpenGL window.
          *
          * @param p_windowTitle Title of the window.
@@ -40,4 +45,19 @@ class IFractal {
          * Render the Fractal.
          */
         virtual void renderFractal() = 0;
+
+        /**
+         * Set the Uniforms of the corresponding Fractal
+         */
+        virtual void setUniforms() = 0;
+
+        /**
+         * Method will be executed each time a new frame is being rendered
+         */
+        virtual void doOnRenderStart() = 0;
+
+        /**
+         * Method will be executed on the end of each rendered frame.
+         */
+        virtual void doOnRenderEnd() = 0;
 };

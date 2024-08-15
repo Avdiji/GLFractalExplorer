@@ -2,8 +2,17 @@
 
 #include <BaseFractal.hpp>
 #include <fstream>
-#include <iostream>
 #include <sstream>
+
+BaseFractal::~BaseFractal() {
+    glDeleteVertexArrays(1, &_VAO);
+    glDeleteBuffers(1, &_VBO);
+    glDeleteBuffers(1, &_EBO);
+    glDeleteProgram(_shaderProgram);
+
+    glfwDestroyWindow(_window);
+    glfwTerminate();
+}
 
 void BaseFractal::initializeWindow(const std::string& p_windowTitle) {
     if (!glfwInit()) { throw WindowInitializationError(); }
@@ -12,7 +21,6 @@ void BaseFractal::initializeWindow(const std::string& p_windowTitle) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // Get primary monitor
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     _window = glfwCreateWindow(_width, _height, p_windowTitle.c_str(), nullptr, nullptr);
     if (!_window) {
@@ -24,8 +32,8 @@ void BaseFractal::initializeWindow(const std::string& p_windowTitle) {
 }
 
 void BaseFractal::createShaderProgram(const std::string& p_fragmentShaderSource) {
-    // Locate and read shader files
-    const std::string vertexShaderSource = "../../../src/shaders.shader.vert";
+    // Read
+    const std::string vertexShaderSource = "../../../src/shaders/shader.vert";
     std::ifstream vertexShaderFile(vertexShaderSource);
     std::ifstream fragmentShaderFile(p_fragmentShaderSource);
 
@@ -35,30 +43,34 @@ void BaseFractal::createShaderProgram(const std::string& p_fragmentShaderSource)
         throw MissingShader(p_fragmentShaderSource);
     }
 
-    std::string vertexShaderStr;
-    std::string fragmentShaderStr;
-    std::string currentLine;
+    std::string vertexShaderStr((std::istreambuf_iterator<char>(vertexShaderFile)), std::istreambuf_iterator<char>());
+    std::string fragmentShaderStr((std::istreambuf_iterator<char>(fragmentShaderFile)),
+                                  std::istreambuf_iterator<char>());
 
-    while (std::getline(vertexShaderFile, currentLine)) { vertexShaderStr += currentLine + "\n"; }
-    while (std::getline(fragmentShaderFile, currentLine)) { fragmentShaderStr += currentLine + "\n"; }
-    const char* vertexShaderSource = vertexShaderStr.c_str();
-    const char* fragmentShaderSource = fragmentShaderStr.c_str();
+    const char* vertexShaderCStr = vertexShaderStr.c_str();
+    const char* fragmentShaderCStr = fragmentShaderStr.c_str();
 
     // Create and compile vertex shader
     _vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(_vertexShader, 1, &vertexShaderSource, nullptr);
+    glShaderSource(_vertexShader, 1, &vertexShaderCStr, nullptr);
     glCompileShader(_vertexShader);
     // catch shader exception
     GLint success;
     glGetShaderiv(_vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) { throw ShaderError(_vertexShader); }
+    if (!success) {
+        glDeleteShader(_vertexShader);
+        throw ShaderError(_vertexShader);
+    }
 
     // Create and compile fragment shader
     _fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(_fragmentShader, 1, &fragmentShaderSource, nullptr);
+    glShaderSource(_fragmentShader, 1, &fragmentShaderCStr, nullptr);
     glCompileShader(_fragmentShader);
     glGetShaderiv(_fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) { throw ShaderError(_fragmentShader); }
+    if (!success) {
+        glDeleteShader(_fragmentShader);
+        throw ShaderError(_fragmentShader);
+    }
 
     // Link shaders into a shader program
     _shaderProgram = glCreateProgram();
@@ -107,6 +119,8 @@ void BaseFractal::setupBuffers() {
 
 void BaseFractal::renderFractal() {
     while (!glfwWindowShouldClose(_window)) {
+        BaseFractal::doOnRenderStart();
+
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(_window, true);
 
         glClear(GL_COLOR_BUFFER_BIT);
@@ -118,16 +132,7 @@ void BaseFractal::renderFractal() {
 
         glfwSwapBuffers(_window);
         glfwPollEvents();
+
+        BaseFractal::doOnRenderEnd();
     }
-
-    glfwTerminate();
-}
-
-int main() {
-    BaseFractal fractal;
-
-    fractal.initializeWindow("BaseFractal");
-    fractal.createShaderProgram("../../../src/shaders/shader.frag");
-    fractal.setupBuffers();
-    fractal.renderFractal();
 }

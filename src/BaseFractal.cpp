@@ -31,28 +31,10 @@ void BaseFractal::initializeWindow(const std::string& p_windowTitle) {
     gladLoadGL();
 }
 
-void BaseFractal::createShaderProgram(const std::string& p_fragmentShaderSource) {
-    // Read
-    const std::string vertexShaderSource = "../../../src/shaders/shader.vert";
-    std::ifstream vertexShaderFile(vertexShaderSource);
-    std::ifstream fragmentShaderFile(p_fragmentShaderSource);
-
-    if (!vertexShaderFile.is_open()) {
-        throw MissingShader(vertexShaderSource);
-    } else if (!fragmentShaderFile.is_open()) {
-        throw MissingShader(p_fragmentShaderSource);
-    }
-
-    std::string vertexShaderStr((std::istreambuf_iterator<char>(vertexShaderFile)), std::istreambuf_iterator<char>());
-    std::string fragmentShaderStr((std::istreambuf_iterator<char>(fragmentShaderFile)),
-                                  std::istreambuf_iterator<char>());
-
-    const char* vertexShaderCStr = vertexShaderStr.c_str();
-    const char* fragmentShaderCStr = fragmentShaderStr.c_str();
-
+void BaseFractal::createShaderProgram() {
     // Create and compile vertex shader
     _vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(_vertexShader, 1, &vertexShaderCStr, nullptr);
+    glShaderSource(_vertexShader, 1, &_vertexShaderSource, nullptr);
     glCompileShader(_vertexShader);
     // catch shader exception
     GLint success;
@@ -63,8 +45,9 @@ void BaseFractal::createShaderProgram(const std::string& p_fragmentShaderSource)
     }
 
     // Create and compile fragment shader
+    const char* fragmentShaderSource = getFragmentShaderSource();
     _fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(_fragmentShader, 1, &fragmentShaderCStr, nullptr);
+    glShaderSource(_fragmentShader, 1, &fragmentShaderSource, nullptr);
     glCompileShader(_fragmentShader);
     glGetShaderiv(_fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
@@ -113,19 +96,21 @@ void BaseFractal::setupBuffers() {
     glEnableVertexAttribArray(0);
 
     glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void BaseFractal::renderFractal() {
     while (!glfwWindowShouldClose(_window)) {
-        BaseFractal::doOnRenderStart();
+        doOnRenderStart();
 
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(_window, true);
 
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(_shaderProgram);
+        setUniforms();
+
         glBindVertexArray(_VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
@@ -133,6 +118,6 @@ void BaseFractal::renderFractal() {
         glfwSwapBuffers(_window);
         glfwPollEvents();
 
-        BaseFractal::doOnRenderEnd();
+        doOnRenderEnd();
     }
 }

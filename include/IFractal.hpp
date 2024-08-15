@@ -1,8 +1,7 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-
-#include <string>
+#include <exception/ShaderError.hpp>
+#include <exception/WindowError.hpp>
 
 /**
  * Interface - Class.
@@ -11,15 +10,17 @@
 class IFractal {
     public:
         /**
-         * Destructor.
-         * Unbinds and deletes any buffers.
+         * Destructor
          */
-        virtual ~IFractal() = 0;
+        virtual ~IFractal() {};
 
         /**
          * Initialize a Fullscreen OpenGL window.
          *
          * @param p_windowTitle Title of the window.
+         *
+         * @throws WindowInitializationError, if openGL couldn't be initialized.
+         * @throws WindowCreationError, if Opengl failed to create a window.
          */
         virtual void initializeWindow(const std::string &p_windowTitle) = 0;
 
@@ -28,23 +29,17 @@ class IFractal {
          * The vertexShader should be identical for all Fractals and thus doesnt need to be dynamic.
          *
          * @param p_fragmentShaderSource Path to the fragment Shader.
+         *
+         * @throws ShaderError if one of the shaders contain errors.
+         * @throws ShaderLinkingError if the shaderProgram is invalid.
+         * @throws MissingShader if a Shader was not found.
          */
         virtual void createShaderProgram(const std::string &p_fragmentShaderSource) = 0;
 
         /**
-         * Bind the VAO
+         * Setup the VAO, VBO, EBO and everything surrounding that.
          */
-        virtual void BindVAO() = 0;
-
-        /**
-         * Bind the VBO and EBO.
-         */
-        virtual void BindBuffers() = 0;
-
-        /**
-         * Unbind the VBO and EBO.
-         */
-        virtual void UnbindBuffers() = 0;
+        virtual void setupBuffers() = 0;
 
         /**
          * Render the Fractal.
@@ -52,22 +47,17 @@ class IFractal {
         virtual void renderFractal() = 0;
 
         /**
-         * First function to be executed on rendering the Fractal.
+         * Set the Uniforms of the corresponding Fractal
          */
-        virtual void onRenderStart() = 0;
+        virtual void setUniforms() = 0;
 
         /**
-         * Last function to be executed on rendering the Fractal.
+         * Method will be executed each time a new frame is being rendered
          */
-        virtual void onRenderEnd() = 0;
+        virtual void doOnRenderStart() = 0;
 
-    private:
-        // Buffer ID's
-        GLuint _VAO, _VBO, _EBO;
-
-        // Shader ID's
-        GLuint _vertexShader, _fragmentShader, _shaderProgram;
-
-        // Window
-        GLFWwindow *_window;
+        /**
+         * Method will be executed on the end of each rendered frame.
+         */
+        virtual void doOnRenderEnd() = 0;
 };

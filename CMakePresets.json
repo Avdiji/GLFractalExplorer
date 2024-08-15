@@ -1,0 +1,65 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "description": "Base settings for all builds",
+            "hidden": true,
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "${sourceDir}/cmake/conan_provider.cmake",
+                "CONAN_INSTALL_ARGS": "--update;--build=missing"
+            },
+            "binaryDir": "build/${presetName}",
+            "installDir": "install/${presetName}"
+        },
+        
+        {
+            "name": "windows",
+            "description": "Windows build configuration",
+            "hidden": true,
+            "displayName": "windows",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+
+        {
+            "name": "windows-debug",
+            "description": "Windows Debug configuration",
+            "displayName": "Windows-Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "inherits": [
+                "base",
+                "windows"
+            ],
+            "environment": {
+                "ENVIRONMENT": "Windows Debug"
+            }
+        },
+        {
+            "name": "windows-release",
+            "description": "Windows Release configuration",
+            "displayName": "Windows-Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "inherits": [
+                "base",
+                "windows"
+            ],
+            "environment": {
+                "ENVIRONMENT": "Windows Release"
+            }
+        }
+    ]
+}

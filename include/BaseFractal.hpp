@@ -80,13 +80,13 @@ class BaseFractal : public IFractal {
         // Window
         GLFWwindow *_window;
 
+    private:
         // Buffer ID's
         GLuint _VAO, _VBO, _EBO;
 
         // Shader ID's
         GLuint _vertexShader, _fragmentShader;
 
-    private:
         const char *_vertexShaderSource = R"(
             #version 330 core
             layout(location = 0) in vec2 aPos;

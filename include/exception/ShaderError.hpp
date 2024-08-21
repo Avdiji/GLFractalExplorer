@@ -18,7 +18,6 @@ class ShaderError : public std::runtime_error {
             GLint success;
             GLchar infolog[512];
 
-            glGetShaderiv(p_shader, GL_COMPILE_STATUS, &success);
             glGetShaderInfoLog(p_shader, 512, nullptr, infolog);
             return std::string("Shader compilation failed: ") + std::string(infolog);
         }
@@ -36,12 +35,7 @@ class ShaderLinkingError : public std::runtime_error {
             GLint success;
             GLchar infolog[512];
 
-            glGetProgramiv(program, GL_LINK_STATUS, &success);
-            if (!success) {
-                glGetProgramInfoLog(program, 512, nullptr, infolog);
-                return std::string("Shader program linking failed: ") + std::string(infolog);
-            } else {
-                return std::string("No linking errors, exception should not be thrown.");
-            }
+            glGetProgramInfoLog(program, 512, nullptr, infolog);
+            return std::string("Shader program linking failed: ") + std::string(infolog);
         }
 };

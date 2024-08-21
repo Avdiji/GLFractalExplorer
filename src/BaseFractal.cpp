@@ -1,8 +1,5 @@
 #pragma once
-
 #include <BaseFractal.hpp>
-#include <fstream>
-#include <sstream>
 
 BaseFractal::~BaseFractal() {
     glDeleteVertexArrays(1, &_VAO);

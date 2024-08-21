@@ -47,28 +47,6 @@ class BaseFractal : public IFractal {
          */
         void renderFractal() override;
 
-        /**
-         * The corresponding FragmentShader, used to render the fractal.
-         *
-         * @return The Fragment Shader, which eventually created the fractal.
-         */
-        const char *getFragmentShaderSource() override { return ""; }
-
-        /**
-         * Set the Uniforms of the corresponding Fractal
-         */
-        void setUniforms() override {}
-
-        /**
-         * Method will be executed each time a new frame is being rendered
-         */
-        void doOnRenderStart() override {}
-
-        /**
-         * Method will be executed on the end of each rendered frame.
-         */
-        void doOnRenderEnd() override {}
-
     protected:
         // Shader Program (Protected to be able to access uniforms)
         GLuint _shaderProgram;

@@ -22,11 +22,11 @@ class IFractal {
          * @throws WindowInitializationError, if openGL couldn't be initialized.
          * @throws WindowCreationError, if Opengl failed to create a window.
          */
-        virtual void initializeWindow(const std::string &p_windowTitle) = 0;
+        virtual void initializeWindow(const std::string& p_windowTitle) = 0;
 
         /**
          * The corresponding FragmentShader, used to render the fractal.
-         * 
+         *
          * @return The Fragment Shader, which eventually created the fractal.
          */
         virtual const char* getFragmentShaderSource() = 0;

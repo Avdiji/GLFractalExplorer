@@ -1,10 +1,7 @@
+#pragma once
 #include <BaseFractal.hpp>
-#include <algorithm>  // For std::min
-#include <chrono>
-#include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <thread>
 
 class Mandelbrot : public BaseFractal {
     public:
@@ -48,7 +45,6 @@ class Mandelbrot : public BaseFractal {
                 }
 
                 void main() {
-                    // Use double precision constants directly
                     dvec2 c = dvec2(u_center) + dvec2(gl_FragCoord.xy - u_resolution / 2.0) * double(u_scale);
                     dvec2 z = dvec2(0.0, 0.0);
                     int i;
@@ -94,6 +90,8 @@ class Mandelbrot : public BaseFractal {
             if (glfwGetKey(_window, GLFW_KEY_RIGHT) == GLFW_PRESS) { _center.first += moveAmount; }
         }
 
+        void doOnRenderEnd() {}
+
     private:
         double _scale = 10.0f;
         int _iterations = 1000;
@@ -106,6 +104,7 @@ class Mandelbrot : public BaseFractal {
         // std::pair<double, double> _center = {-0.85973844, 0.23495194};
         // std::pair<double, double> _center = {-0.73885270, 0.14167642};
         // std::pair<double, double> _center = {-1.4013633, 7.6094599e-05};
+        // std::pair<double, double> _center = {0.26055793, 0.0017685117};
 };
 
 int main() {

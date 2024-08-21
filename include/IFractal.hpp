@@ -22,19 +22,23 @@ class IFractal {
          * @throws WindowInitializationError, if openGL couldn't be initialized.
          * @throws WindowCreationError, if Opengl failed to create a window.
          */
-        virtual void initializeWindow(const std::string &p_windowTitle) = 0;
+        virtual void initializeWindow(const std::string& p_windowTitle) = 0;
+
+        /**
+         * The corresponding FragmentShader, used to render the fractal.
+         *
+         * @return The Fragment Shader, which eventually created the fractal.
+         */
+        virtual const char* getFragmentShaderSource() = 0;
 
         /**
          * Create a ShaderProgram.
          * The vertexShader should be identical for all Fractals and thus doesnt need to be dynamic.
          *
-         * @param p_fragmentShaderSource Path to the fragment Shader.
-         *
          * @throws ShaderError if one of the shaders contain errors.
          * @throws ShaderLinkingError if the shaderProgram is invalid.
-         * @throws MissingShader if a Shader was not found.
          */
-        virtual void createShaderProgram(const std::string &p_fragmentShaderSource) = 0;
+        virtual void createShaderProgram() = 0;
 
         /**
          * Setup the VAO, VBO, EBO and everything surrounding that.

@@ -9,3 +9,5 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/dependencies dependencies)
 # Link OpenGL and glad to the library
 target_link_libraries(${BASE_FRACTAL} glfw)
 target_link_libraries(${BASE_FRACTAL} Glad)
+
+add_subdirectory(algebraic_fractals)

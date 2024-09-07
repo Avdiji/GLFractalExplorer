@@ -11,3 +11,4 @@ target_link_libraries(${BASE_FRACTAL} glfw)
 target_link_libraries(${BASE_FRACTAL} Glad)
 
 add_subdirectory(algebraic_fractals)
+add_subdirectory(other)

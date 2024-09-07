@@ -1,5 +1,7 @@
 #pragma once
 #include <BaseFractal.hpp>
+#include <chrono>
+#include <thread>
 
 BaseFractal::~BaseFractal() {
     glDeleteVertexArrays(1, &_VAO);
@@ -38,7 +40,7 @@ void BaseFractal::createShaderProgram() {
     glGetShaderiv(_vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glDeleteShader(_vertexShader);
-        throw ShaderError(_vertexShader);
+        throw ShaderError(GL_VERTEX_SHADER, _vertexShader);
     }
 
     // Create and compile fragment shader
@@ -49,7 +51,7 @@ void BaseFractal::createShaderProgram() {
     glGetShaderiv(_fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glDeleteShader(_fragmentShader);
-        throw ShaderError(_fragmentShader);
+        throw ShaderError(GL_FRAGMENT_SHADER, _fragmentShader);
     }
 
     // Link shaders into a shader program
@@ -99,6 +101,8 @@ void BaseFractal::setupBuffers() {
 
 void BaseFractal::renderFractal() {
     while (!glfwWindowShouldClose(_window)) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
         doOnRenderStart();
 
         if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(_window, true);

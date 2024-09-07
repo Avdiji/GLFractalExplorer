@@ -11,15 +11,24 @@
  */
 class ShaderError : public std::runtime_error {
     public:
-        ShaderError(const GLuint &p_shader) : std::runtime_error(createErrorMessage(p_shader)) {}
+        ShaderError(const GLenum &p_shaderType, GLuint &p_shader)
+            : std::runtime_error(createErrorMessage(p_shaderType, p_shader)) {}
 
     private:
-        static std::string createErrorMessage(const GLuint &p_shader) {
+        static std::string createErrorMessage(const GLenum &p_shaderType, const GLuint &p_shader) {
             GLint success;
             GLchar infolog[512];
 
             glGetShaderInfoLog(p_shader, 512, nullptr, infolog);
-            return std::string("Shader compilation failed: ") + std::string(infolog);
+
+            std::string message;
+            if (p_shaderType == GL_VERTEX_SHADER) {
+                message = "Vertex-Shader compilation failed: ";
+            } else if (p_shaderType == GL_FRAGMENT_SHADER) {
+                message = "Fragment-Shader compilation failed: ";
+            }
+
+            return message + std::string(infolog);
         }
 };
 
